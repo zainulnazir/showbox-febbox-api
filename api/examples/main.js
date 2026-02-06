@@ -1,5 +1,5 @@
-import ShowboxAPI from './src/ShowboxAPI.js';
-import FebboxAPI from './src/FebBoxApi.js';
+import ShowboxAPI from '../src/ShowboxAPI.js';
+import FebboxAPI from '../src/FebBoxApi.js';
 
 (async () => {
     const api = new ShowboxAPI();

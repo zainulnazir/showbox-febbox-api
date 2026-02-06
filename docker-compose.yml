@@ -1,14 +1,28 @@
 version: '3.8'
 
 services:
-  app:
-    build: .
+  api:
+    build: ./api
     container_name: showbox-febbox-api
     ports:
-      - "3000:3000" # Expose the app on port 3000
+      - "3000:3000"
     volumes:
-      - .:/usr/src/app # Mount the current directory into the container
-      - /usr/src/app/node_modules # Prevent overwriting node_modules
+      - ./api:/usr/src/app
+      - /usr/src/app/node_modules
     environment:
       - NODE_ENV=local
+    depends_on:
+      - bypass
+    restart: always
+
+  bypass:
+    build: ./bypass
+    container_name: cloudflare-bypass
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./bypass:/app
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
     restart: always

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Stopping Cloudflare Bypass Server..."
-pkill -f "cf-bypass/server.py"
+pkill -f "bypass/server.py"
 
 if [ $? -eq 0 ]; then
     echo "Server stopped successfully."

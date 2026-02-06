@@ -2,10 +2,11 @@
 
 # Get the directory where this script is located
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ROOT_DIR="$DIR/.."
 
 # Path to the virtual environment python
-PYTHON_EXEC="$DIR/cf-bypass/venv/bin/python"
-SERVER_SCRIPT="$DIR/cf-bypass/server.py"
+PYTHON_EXEC="$ROOT_DIR/bypass/venv/bin/python"
+SERVER_SCRIPT="$ROOT_DIR/bypass/server.py"
 
 echo "Starting Cloudflare Bypass Server..."
 echo "Python Executable: $PYTHON_EXEC"

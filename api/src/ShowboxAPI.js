@@ -105,18 +105,19 @@ class ShowboxAPI {
 
     async getFebBoxId(id, type) {
         const targetUrl = `https://www.showbox.media/index/share_link?id=${id}&type=${type}`;
-        const bypassUrl = `http://localhost:8000/html?url=${encodeURIComponent(targetUrl)}`;
-        
+        const bypassBaseUrl = process.env.BYPASS_URL || 'http://localhost:8000';
+        const bypassUrl = `${bypassBaseUrl}/html?url=${encodeURIComponent(targetUrl)}`;
+
         console.log(`\n🔄 Bypassing Cloudflare for: ${targetUrl}`);
-        
+
         try {
             const response = await fetch(bypassUrl);
             if (!response.ok) {
                 throw new Error(`Bypass server error: ${response.statusText}`);
             }
-            
+
             let rawText = await response.text();
-            
+
             try {
                 // Check if the response is wrapped in HTML (Firefox plaintext view)
                 if (rawText.trim().startsWith('<html') || rawText.trim().startsWith('<!DOCTYPE html>')) {
@@ -153,7 +154,7 @@ class ShowboxAPI {
         }
     }
 
-    async getAutocomplete(keyword , pagelimit = 5) {
+    async getAutocomplete(keyword, pagelimit = 5) {
         return this.request('Autocomplate2', { keyword, pagelimit: pagelimit }).then(data => {
             return data.data;
         });
