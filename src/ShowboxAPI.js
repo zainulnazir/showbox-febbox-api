@@ -2,6 +2,7 @@ import CryptoJS from 'crypto-js';
 import { customAlphabet } from 'nanoid';
 import fetch from 'node-fetch';
 import dotenv from 'dotenv';
+import readline from 'readline';
 
 dotenv.config();
 
@@ -103,9 +104,53 @@ class ShowboxAPI {
     }
 
     async getFebBoxId(id, type) {
-        const response = await fetch(`https://www.showbox.media/index/share_link?id=${id}&type=${type}`);
-        const data = await response.json();
-        return data?.data?.link?.split('/').pop();
+        const targetUrl = `https://www.showbox.media/index/share_link?id=${id}&type=${type}`;
+        const bypassUrl = `http://localhost:8000/html?url=${encodeURIComponent(targetUrl)}`;
+        
+        console.log(`\n🔄 Bypassing Cloudflare for: ${targetUrl}`);
+        
+        try {
+            const response = await fetch(bypassUrl);
+            if (!response.ok) {
+                throw new Error(`Bypass server error: ${response.statusText}`);
+            }
+            
+            let rawText = await response.text();
+            
+            try {
+                // Check if the response is wrapped in HTML (Firefox plaintext view)
+                if (rawText.trim().startsWith('<html') || rawText.trim().startsWith('<!DOCTYPE html>')) {
+                    console.log("Received HTML wrapped response, attempting to extract JSON...");
+                    // Try to find JSON inside <pre> tags or just the body text
+                    const preMatch = rawText.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
+                    if (preMatch && preMatch[1]) {
+                        rawText = preMatch[1];
+                    } else {
+                        // Fallback: try to strip tags
+                        rawText = rawText.replace(/<[^>]*>/g, '');
+                    }
+                    // Decode HTML entities if needed (e.g. &quot; -> ")
+                    // For now, let's assume it's simple JSON
+                }
+
+                const data = JSON.parse(rawText);
+                if (data && data.data && data.data.link) {
+                    const link = data.data.link;
+                    console.log(`✅ Successfully retrieved link: ${link}`);
+                    return link.split('/').pop();
+                } else {
+                    console.error("Invalid data structure received:", data);
+                    return null;
+                }
+            } catch (e) {
+                console.error("Failed to parse response from bypass server. Response might not be JSON:", rawText.substring(0, 200) + "...");
+                return null;
+            }
+
+        } catch (error) {
+            console.error("Error during automated bypass:", error);
+            return null;
+        }
     }
 
     async getAutocomplete(keyword , pagelimit = 5) {
