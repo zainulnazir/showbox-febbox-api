@@ -1,3 +1,5 @@
+
+
 # Showbox & Febbox API Integration 📺 🎥
 
 An advanced Node.js API that bridges **Showbox** (for media discovery) and **Febbox** (for high-speed downloads/streaming). It features an integrated, automated Cloudflare bypass system to ensure reliable access to protected links.
@@ -111,10 +113,12 @@ The API will be available at: `http://localhost:3000`
 *   Retrieves the Febbox ID for a given Showbox item (handles Cloudflare bypass automatically).
 *   **Params**: `id` (Showbox ID), `type` (1=Movie, 2=TV)
 
-`GET /api/febbox/files/:shareKey`
+`GET /api/febbox/files`
+*   **Params**: `shareKey`, `parent_id` (default: `0`)
 *   Lists files in the Febbox share.
 
-`GET /api/febbox/links/:shareKey/:fid`
+`GET /api/febbox/links`
+*   **Params**: `shareKey`, `fid`
 *   Generates direct download links for a specific file.
 
 ---
